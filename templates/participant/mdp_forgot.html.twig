@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mot de passe oublié{% endblock %}
+
+{% block main %}
+    {{ parent() }}
+{# {{ path('mail_envoyer') }} #}
+    <form action="#" method="post" class="col">
+        <div class="form-group">
+            <label>Saisir l'adresse mail:</label>
+            <input type="email" name="mail" placeholder="Saisir votre email" value="tlargeau@campus-eni.fr" class="form-control"/>
+            <input type="submit" value="Envoyer" class="btn btn-primary mt-2"/>
+        </div>
+    </form>
+{% endblock %}
