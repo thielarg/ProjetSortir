@@ -3,7 +3,11 @@
 namespace App\Entity;
 
 use App\Repository\LieuRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 /**
  * @ORM\Entity(repositoryClass=LieuRepository::class)
@@ -18,11 +22,23 @@ class Lieu
     private $id;
 
     /**
+     * @Assert\Length(
+     *     min="2",
+     *     minMessage="{{ limit }} caractères au minimum requis, svp !",
+     *     max=50,
+     *     maxMessage="{{ limit }} caractères requis au maximum, svp !")
+     * @Assert\NotBlank(message="nom obligatoire")
      * @ORM\Column(type="string", length=50)
      */
     private $nom;
 
     /**
+     * @Assert\Length(
+     *     min="2",
+     *     minMessage="{{ limit }} caractères au minimum requis, svp !",
+     *     max=50,
+     *     maxMessage="{{ limit }} caractères requis au maximum, svp !")
+     * @Assert\NotBlank(message="rue obligatoire")
      * @ORM\Column(type="string", length=50)
      */
     private $rue;
@@ -36,6 +52,21 @@ class Lieu
      * @ORM\Column(type="float")
      */
     private $longitude;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Ville", inversedBy="lieux")
+     */
+    private $ville;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Sortie", mappedBy="lieu")
+     */
+    private $sorties;
+
+    public function __construct()
+    {
+        $this->sorties = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -86,6 +117,49 @@ class Lieu
     public function setLongitude(float $longitude): self
     {
         $this->longitude = $longitude;
+
+        return $this;
+    }
+
+    public function getVille(): ?Ville
+    {
+        return $this->ville;
+    }
+
+    public function setVille(?Ville $ville): self
+    {
+        $this->ville = $ville;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Sortie[]
+     */
+    public function getSorties(): Collection
+    {
+        return $this->sorties;
+    }
+
+    public function addSortie(Sortie $sortie): self
+    {
+        if (!$this->sorties->contains($sortie)) {
+            $this->sorties[] = $sortie;
+            $sortie->setLieu($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSortie(Sortie $sortie): self
+    {
+        if ($this->sorties->contains($sortie)) {
+            $this->sorties->removeElement($sortie);
+            // set the owning side to null (unless already changed)
+            if ($sortie->getLieu() === $this) {
+                $sortie->setLieu(null);
+            }
+        }
 
         return $this;
     }

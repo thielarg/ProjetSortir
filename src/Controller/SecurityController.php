@@ -35,6 +35,16 @@ class SecurityController extends AbstractController
     }
 
     /**
+     * @Route("/logout-succesfull", name="logout_temp")
+     */
+    public function logoutSuccess()
+    {
+        //return $this->render('security/logout.html.twig');
+        $this->addFlash('success','vous êtes bien deconnecté');
+        return $this->redirectToRoute('app_login');
+    }
+
+    /**
      * @Route("/mdp_forgot", name="mdp_forgot")
      */
     public function mdpForgot()
