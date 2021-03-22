@@ -25,6 +25,7 @@
         <![endif]-->
 
         {% block stylesheets %}
+            <link rel="shortcut icon" href="{{ asset('image/favicon.jpg') }}">
             <!-- declaration du fichier CSS dans sa version minifiée -->
             <link href="{{ asset('css/bootstrap/bootstrap.min.css') }}" rel="stylesheet">
             <link rel="preconnect" href="https://fonts.gstatic.com">
@@ -33,12 +34,26 @@
         {% endblock %}
     </head>
     <body>
-        <nav class="navbar navbar-expand-sm navbar-light bg-light mb-3">
-            <a class="navbar-brand" href="#"><img src="{{ asset('image/logo.jpg') }}" alt="logo" width="100px"></a>
+        <nav class="navbar navbar-expand-sm navbar-light bg-light">
+            <a class="navbar-brand" href="{{ path('sortie_liste') }}"><img src="{{ asset('image/logo.jpg') }}" alt="logo" width="100px"></a>
             {% block nav %}
                 {% include ('inc/nav.html.twig') %}
             {% endblock %}
         </nav>
+
+        {# read and display all flash messages #}
+        {# app variable globale qui existe dans twig (c'est symfony qui l'a créé pour y stocker certaines infos #}
+        {# on y retrouve notamment les infos de l'utilisateur connecté #}
+        {# on a la clé (label) et la valeur (message) du tableau sur lequel on boucle #}
+        {% for label, messages in app.flashes %}
+            {# messages c'est un tableau de tous les message de type success par exemple #}
+            {% for message in messages %}
+                <div class="flash-{{ label }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+
 
         {% block main %}
         {% endblock %}

@@ -126,6 +126,11 @@ class Participant implements UserInterface
      */
     private $sortiesOrganisees;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $isVerified = false;
+
     public function __construct()
     {
         $this->sorties = new ArrayCollection();
@@ -370,6 +375,18 @@ class Participant implements UserInterface
                 $sortieOrganisee->setOrganisateur(null);
             }
         }
+
+        return $this;
+    }
+
+    public function isVerified(): bool
+    {
+        return $this->isVerified;
+    }
+
+    public function setIsVerified(bool $isVerified): self
+    {
+        $this->isVerified = $isVerified;
 
         return $this;
     }

@@ -58,7 +58,7 @@ class Sortie
      * @Assert\NotBlank(message="Le nombre d'inscriptions max est obligatoire")
      * @ORM\Column(type="integer")
      */
-    private $nbInscriptionMax;
+    private $nbInscriptionsMax;
 
     /**
      * @Assert\Length(
@@ -170,14 +170,14 @@ class Sortie
         return $this;
     }
 
-    public function getNbInscriptionMax(): ?int
+    public function getNbInscriptionsMax(): ?int
     {
-        return $this->nbInscriptionMax;
+        return $this->nbInscriptionsMax;
     }
 
-    public function setNbInscriptionMax(int $nbInscriptionMax): self
+    public function setNbInscriptionsMax(int $nbInscriptionsMax): self
     {
-        $this->nbInscriptionMax = $nbInscriptionMax;
+        $this->nbInscriptionsMax = $nbInscriptionsMax;
 
         return $this;
     }

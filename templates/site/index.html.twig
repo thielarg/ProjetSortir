@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des sites{% endblock %}
+
+{% block nav %}
+    {{ parent() }}
+{% endblock %}
+
+{% block main %}
+    {{ parent() }}
+<div class="row justify-content-center">
+    <div class="col-xs-11 col-offset-md-1">
+        {# ----- titre page ------ #}
+        <div class="row mb-5">
+            <div class="col text-center">
+                <h1>Gestion des sites</h1>
+            </div>
+        </div>
+
+    <div id="message"></div>
+    <form>
+        <input type="text" class="form-control" id="inputFiltrerSite" placeholder="Rechercher" />
+    </form>
+    <table class="table">
+        <tbody id="table_site">
+        </tbody>
+    </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('/js/app_gerer_sites.js') }}"></script>
+{% endblock %}
