@@ -1,0 +1,174 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des sorties{% endblock %}
+
+{% block main %}
+    <div class="row justify-content-center">
+        <div class="col-sm-10 col-offset-md-1">
+            {# ----- titre page ------ #}
+            <div class="row">
+                 <div class="col text-center">
+                    <h3>Filtrer les sorties</h3>
+                    <div class="row d-flex flex-row-reverse mr-1">
+                        <div class="d-flex flex-column">
+                            <span><h6>Date du jour : {{ 'now' | date('d/m/Y') }}</h6></span>
+                            <span><h6>Participant : {{ app.user.username }}</h6></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {# ------- Filtres ------- #}
+            <form action="{{ path('sortie_liste') }}" method="get" class="row">
+            <div class="col-sm-6">
+                <input type="text"class="form-control mb-3" placeholder="Rechercher une sortie par mot-clé" name="recherche_terme" id="recherche_terme" value="{{ app.request.get('recherche_terme') }}">
+
+                <select class="custom-select mb-3" name="recherche_site" aria-label="Example select with button addon">
+                    <option selected>Choisir un site</option>
+                    {% for site in sites %}
+                      <option value="{{ site.id }}" {{ (site.id in app.request.get('recherche_site')) ? 'selected' : '' }}>{{ site.nom }}</option>
+                    {% endfor %}
+                </select>
+
+                <select class="custom-select mb-3" name="recherche_etat" aria-label="Example select with button addon">
+                    <option selected>Choisir le statut</option>
+                    {% for etat in etats %}
+                        <option value="{{ etat.id }}" {{ (etat.id in app.request.get('recherche_etat')) ? 'selected' : '' }}>{{ etat.libelle }}</option>
+                    {% endfor %}
+                </select>
+
+                <div class="mb-3">
+                    <label for="debut">Date de début</label>
+                    <input class="rounded form-control" type="date" id="debut" name="date_debut" value="{{ app.request.get('date_debut') }}">
+                    <label for="fin">Date de fin</label>
+                    <input class="rounded form-control" type="date" id="fin" name="date_fin" value="{{ app.request.get('date_fin') }}">
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-6">
+                <div class="row d-flex flex-column ml-1 col-xs-12 d-inline">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="cb_organisateur" value="{{ app.user.id }}" {% if app.request.get('cb_organisateur') %} checked {% endif %}>
+                        <label class="form-check-label">Sorties dont je suis l'organisateur.trice</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="cb_inscrit" value="{{ app.user.id }}" {% if app.request.get('cb_inscrit') %} checked {% endif %}>
+                        <label class="form-check-label" >Sorties auxquelles je suis inscrit.e</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="cb_non_inscrit" value="{{ app.user.id }}" {% if app.request.get('cb_non_inscrit') %} checked {% endif %}>
+                        <label class="form-check-label" >Sorties auxquelles je ne suis pas inscrit.e</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="cb_passee" {% if app.request.get('cb_passee') %} checked {% endif %}>
+                        <label class="form-check-label" >Sorties passées</label>
+                    </div>
+                </div>
+
+                <div class="row d-flex text-center ">
+                    <div class="col">
+                        <button type="submit" class="btn btn-primary mr-1 mt-5 mb-2" value="Rechercher" id="btnRechercher" name="btnRechercher"><img src="{{ asset('image/viewmag.png') }}" alt="Rechercher" title="Rechercher"/>&nbsp;Rechercher</button>
+                        <a href="{{ path('sortie_liste') }}" class="btn btn-warning ml-1 mt-5 mb-2"><img src="{{ asset('image/redo.png') }}" alt="Réinitialiser les parametres du filtre" title="Réinitialiser les parametres du filtre">&nbsp;Réinitialiser</a>
+                    </div>
+                </div>
+            </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-offset-md-1">
+            {# ----- sous-titre page ------ #}
+            <div class="row">
+                <div class="col text-center">
+                    <h3>Liste des sorties</h3>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col text-center">
+                    <a href="{{ path('sortie_ajouter') }}" class="btn btn-success m-2"><img src="{{ asset('image/add.png') }}" alt="Créer une sortie" title="Créer une sortie">&nbsp;Créer une sortie</a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th scope="col" style="width: 21%">Nom</th>
+                                    <th scope="col" style="width: 12%">Date</th>
+                                    <th scope="col" class="d-none d-sm-table-cell" style="width: 12%">Clôture</th>
+                                    <th scope="col" class="d-none d-sm-table-cell" style="width: 5%">Inscrits</th>
+                                    <th scope="col" class="d-none d-sm-table-cell" style="width: 5%">Etat</th>
+                                    <th scope="col" class="d-none d-sm-table-cell" style="width: 5%">Inscrit</th>
+                                    <th scope="col" class="d-none d-lg-table-cell" style="width: 15%">Organisateur</th>
+                                    <th scope="col" style="width: 35%">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {%  if sorties | length == 0 %}
+                                <tr>
+                                    <td class="text-center"colspan="8">Aucun résultat</td>
+                                </tr>
+                                {% else %}
+                                    {% for sortie in sorties %}
+                                <tr>
+                                    <td scope="row"> <a href="{{ path('sortie_detail', {'id' : sortie.id})  }}">{{ sortie.nom }}</a> </td>
+                                    <td>{{ sortie.dateHeureDebut | date('d-m-Y') }}</td>
+                                    <td class="d-none d-sm-table-cell">{{ sortie.dateLimiteInscription | date('d-m-Y') }}</td>
+                                    <td class="d-none d-sm-table-cell">{{ sortie.participants | length }} / {{ sortie.nbInscriptionsMax }}</td>
+                                    <td class="d-none d-sm-table-cell">{{ sortie.etat.libelle }}</td>
+                                    <td class="text-center d-none d-sm-table-cell">
+                                        {{ app.user in sortie.participants ? '<img src="https://img.icons8.com/material/24/000000/delete-sign.png">' : '' }}
+                                    </td>
+                                    <td class="d-none d-lg-table-cell">
+                                        <a href="{{ path('participant_detail', {'id' : sortie.organisateur.id})  }}">{{ sortie.organisateur.username }}</a>
+                                    </td>
+                                    <td>
+                                        {# ---------- Si je suis l'administrateur ----------- #}
+                                        {% if app.user.administrateur %}
+                                            {# --------- Je peux annuler la sortie ---------- #}
+                                            <a href="{{ path('admin_annuler_sortie', {'sortieid' : sortie.id}) }}" class="btn btn-danger bmr-1 mb-1 mt-1"><img src="{{ asset('image/undo.png') }}" alt="Annuler" title="Annuler la sortie">&nbsp;Annuler</a>
+                                            {# {% else %}  #}
+                                            {# ---------- Si je suis l'organisateur : je peux également annuler la sortie -------- #}
+                                            {# <a href="{{ path('sortie_annuler', {'sortieid' : sortie.id}) }}" class="btn btn-danger mr-1 mb-1 mt-1"><img src="{{ asset('image/undo.png') }}" alt="Annuler" title="Annuler la sortie">&nbsp;Annuler</a> #}
+                                        {% endif %}
+                                        {# ---------- Si je suis l'organisateur ----------- #}
+                                        {% if app.user.username == sortie.organisateur.username %}
+                                            {# ---------------- Si la sortie est au stade de créer ------------- #}
+                                            {% if sortie.etat.id == 1 %}
+                                                {# ---------- Je peux soit la modifier ---------------- #}
+                                                <a href="{{ path('sortie_modifier', {'sortieid' : sortie.id}) }}" class="btn btn-secondary mr-1"><img src="{{ asset('image/modif.png') }}" alt="Modifier" title="Modifier la sortie">&nbsp;Modifier</a>
+                                                {# -----------Soit la publier -------------- #}
+                                                <a href="{{ path('sortie_publier', {'sortieid' : sortie.id}) }}" class="btn btn-success mr-1"><img src="{{ asset('image/commit.png') }}" alt="Publier" title="Publier la sortie">&nbsp;Publier</a>
+                                            {% else %}
+                                                {# ---------- Sinon je peux soit l'afficher --------- #}
+                                                <a href="{{ path('sortie_detail', {'id' : sortie.id}) }}" class="btn btn-light"><img src="{{ asset('image/edit.png') }}" alt="Afficher" title="Afficher la sortie">&nbsp;Afficher</a>
+                                                {% if sortie.etat.id == 2 %}
+                                                    {# ---------- Ou l'annuler ---------------- #}
+                                                    <a href="{{ path('sortie_annuler', {'sortieid' : sortie.id}) }}" class="btn btn-danger mr-1 mb-1 mt-1"><img src="{{ asset('image/undo.png') }}" alt="Annuler" title="Annuler la sortie">&nbsp;Annuler</a>
+                                                {% endif %}
+                                            {% endif %}
+                                        {% else %}
+                                            {# --------------- Si je suis un participant ------------ #}
+                                            {# --------------- Si la sortie est ouverte ------------- #}
+                                            {% if sortie.etat.id == 2 %}
+                                                {% if app.user in sortie.participants %}
+                                                    <a href="{{ path('sortie_desister', {'sortieid' : sortie.id}) }}" class="btn btn-danger "><img src="{{ asset('image/delete_user.png') }}" alt="Se désister" title="Se désister de la sortie">&nbsp;Se désister</a>
+                                                {% else %}
+                                                    <a href="{{ path('sortie_inscrire', {'sortieid' : sortie.id}) }}" class="btn btn-success "><img src="{{ asset('image/add_user.png') }}" alt="S'inscrire" title="S'inscrire à la sortie">&nbsp;S'inscrire</a>
+                                                {% endif %}
+                                            {% else %}
+                                            {# ------------ Sinon on affiche les détails ------------ #}
+                                                <a href="{{ path('sortie_detail', {'id' : sortie.id}) }}" class="btn btn-light"><img src="{{ asset('image/edit.png') }}" alt="Afficher" title="Afficher la sortie">&nbsp;Afficher</a>
+                                            {% endif %}
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

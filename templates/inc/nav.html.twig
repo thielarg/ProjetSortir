@@ -1,15 +1,17 @@
     <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-        <li class="nav-item"><a class="nav-link" href="#">Accueil</a></li>
-        <li class="nav-item"><a class="nav-link" href="#">Mon profil</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ path ('sortie_liste') }}">Accueil</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ path('participant_modifier') }}">Mon profil</a></li>
+        {% if is_granted('ROLE_ADMIN') %}
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#">Administration</a>
             <div class="dropdown-menu">
-                <a class="dropdown-item" href="#">Participants</a>
-                <a class="dropdown-item" href="#">Villes</a>
-                <a class="dropdown-item" href="#">Sites</a>
+                <a class="dropdown-item" href="{{ path('admin_liste_des_participants') }}">Participants</a>
+                <a class="dropdown-item" href="{{ path('ville') }}">Villes</a>
+                <a class="dropdown-item" href="{{ path('site') }}">Sites</a>
             </div>
         </li>
+        {% endif %}
         <li class="nav-item">
-            <a class="nav-link" href="{{ path('logout_temp') }}">Se déconnecter</a>
+            <a class="nav-link" href="{{ path('app_logout') }}">Se déconnecter</a>
         </li>
     </ul>

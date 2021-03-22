@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    {{ parent() }}
+    <div class="row mt-5">
+        <div class="col">
+            <table class="table">
+                <tbody>
+                <tr>
+                    <td class="text-center" colspan="2"><h1>{{ participant.username }}</h1></td>
+                </tr>
+                <tr>
+                    <td>Prénom</td>
+                    <td>{{ participant.prenom }}</td>
+                </tr>
+                <tr>
+                    <td>Nom</td>
+                    <td>{{ participant.nom }}</td>
+                </tr>
+                <tr>
+                    <td>Téléphone</td>
+                    <td>{{ participant.telephone }}</td>
+                </tr>
+                <tr>
+                    <td>Email</td>
+                    <td>{{ participant.mail }}</td>
+                </tr>
+                <tr>
+                    <td>Ville de rattachement</td>
+                    <td>{{ participant.site.nom }}</td>
+                </tr>
+                <tr>
+                    <td>Etat</td>
+                    <td>{% if participant.actif == true %}
+                        Actif
+                        {% else %}
+                        Inactif
+                        {% endif %}
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="text-center">
+                {% if participant.actif %}
+                <a href="{{ path('admin_desactiver', {'participantid' : participant.id}) }}" class="btn btn-primary mr-1">Désactiver</a>
+                {% else %}
+                <a href="{{ path('admin_activer', {'participantid' : participant.id}) }}" class="btn btn-primary mr-1">Activer</a>
+                {% endif %}
+                <a href="{{ path('admin_supprimer', {'participantid' : participant.id}) }}" class="btn btn-primary mr-1">Supprimer</a>
+                <a href="{{ path('admin_liste_des_participants') }}" class="btn btn-primary">Retour</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block title %}
+
+{% endblock %}
+
